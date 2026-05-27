@@ -1,11 +1,27 @@
 {
-    "name": "mk.js-server",
-    "version": "0.0.1",
-    "author": "Minko Gechev @mgechev",
-    "description": "Node.js server for mk.js",
-    "dependencies": {
-        "express": "3.x.x",
-        "socket.io": "0.9.x"
-    },
-    "license": "MIT"
+  "name": "mk.js-server",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Minko Gechev @mgechev",
+  "description": "Node.js server for mk.js",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "lint": "eslint server.js games.js",
+    "test": "node --test",
+    "build": "node --check server.js && node --check games.js"
+  },
+  "dependencies": {
+    "express": "^4.18.3",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "nodemon": "^3.1.0"
+  }
 }
