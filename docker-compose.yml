@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: npm run dev
+    ports:
+      - "${PORT:-55555}:55555"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 55555
+      DATABASE_URL: postgres://${POSTGRES_USER:-mkjs}:${POSTGRES_PASSWORD:-mkjs}@postgres:5432/${POSTGRES_DB:-mkjs}
+    volumes:
+      - .:/app
+      - app_node_modules:/app/server/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-mkjs}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mkjs}
+      POSTGRES_DB: ${POSTGRES_DB:-mkjs}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mkjs} -d ${POSTGRES_DB:-mkjs}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  app_node_modules:
+  postgres_data:
