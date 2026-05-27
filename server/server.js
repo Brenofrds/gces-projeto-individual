@@ -7,6 +7,7 @@ var path = require('path'),
     server = http.createServer(app),
     io = new socketIo.Server(server),
     games = new GameCollection(),
+    host = process.env.HOST || '0.0.0.0',
     port = process.env.PORT || 55555;
 
 app.use(express.static(path.join(__dirname, '..', 'game')));
@@ -46,8 +47,8 @@ io.on('connection', function (socket) {
 });
 
 if (require.main === module) {
-  server.listen(port, function () {
-    console.log('Servidor mk.js rodando na porta ' + port);
+  server.listen(port, host, function () {
+    console.log('Servidor mk.js rodando em http://' + host + ':' + port);
   });
 }
 
