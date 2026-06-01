@@ -37,6 +37,9 @@ jobs:
       - name: Rodar build/check do backend
         run: npm run build
 
+      - name: Rodar testes do backend
+        run: npm test
+
   frontend-check:
     name: Frontend syntax check
     runs-on: ubuntu-latest
