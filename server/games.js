@@ -24,6 +24,7 @@ Game.prototype.addPlayer = function (p) {
   if (this._players.length > 1) {
     this._addHandlers();
     this._players[0].emit(Messages.PLAYER_CONNECTED, 0);
+    this._players[1].emit(Messages.PLAYER_CONNECTED, 1);
   }
   return true;
 };
