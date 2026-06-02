@@ -40,6 +40,9 @@ jobs:
       - name: Rodar testes do backend
         run: npm test
 
+      - name: Rodar testes de fuzzing do backend
+        run: npm run test:fuzz
+
   frontend-check:
     name: Frontend syntax check
     runs-on: ubuntu-latest

@@ -70,7 +70,7 @@ Game.prototype.endGame = function (playerOut) {
 };
 
 function GameCollection() {
-  this._games = {};
+  this._games = Object.create(null);
 }
 
 GameCollection.prototype.getGame = function (game) {

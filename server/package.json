@@ -13,6 +13,7 @@
     "dev": "nodemon --legacy-watch --watch . server.js",
     "lint": "eslint server.js games.js database.js",
     "test": "node --test",
+    "test:fuzz": "node --test games.fuzz.test.js",
     "build": "node --check server.js && node --check games.js && node --check database.js"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@eslint/js": "^9.0.0",
     "eslint": "^9.0.0",
+    "fast-check": "^4.8.0",
     "nodemon": "^3.1.0"
   }
 }
