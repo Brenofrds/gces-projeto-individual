@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: mkjs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/brenofrds/gces-projeto-individual/backend:latest
+          ports:
+            - containerPort: 55555
+          envFrom:
+            - configMapRef:
+                name: mkjs-config
+          env:
+            - name: DATABASE_URL
+              value: postgres://mkjs:mkjs@postgres:5432/mkjs
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 55555
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: mkjs
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 55555
+      targetPort: 55555

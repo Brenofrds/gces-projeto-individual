@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mkjs-config
+  namespace: mkjs
+data:
+  PORT: "55555"
+  HOST: "0.0.0.0"
+  NODE_ENV: "production"
+  POSTGRES_DB: "mkjs"
+  POSTGRES_USER: "mkjs"
