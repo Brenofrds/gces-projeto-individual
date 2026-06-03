@@ -1,0 +1,39 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    environment:
+      HOST: 0.0.0.0
+      PORT: 55555
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-mkjs}:${POSTGRES_PASSWORD:-mkjs}@postgres:5432/${POSTGRES_DB:-mkjs}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-mkjs}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mkjs}
+      POSTGRES_DB: ${POSTGRES_DB:-mkjs}
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mkjs} -d ${POSTGRES_DB:-mkjs}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data_prod:
