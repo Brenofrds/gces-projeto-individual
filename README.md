@@ -77,6 +77,12 @@ kubectl apply --dry-run=client -f k8s/
 
 ---
 
+## Qualidade de código
+
+Análise contínua via SonarCloud: [sonarcloud.io/project/overview?id=Brenofrds_gces-projeto-individual](https://sonarcloud.io/project/overview?id=Brenofrds_gces-projeto-individual)
+
+---
+
 ## CI/CD
 
 | Workflow | Gatilho | O que faz |
