@@ -94,6 +94,12 @@ Pipeline completo visível em **Actions** no GitHub.
 
 ---
 
+## Uso de IA
+
+O desenvolvimento foi assistido por IA de forma estruturada. Para isso, foi criada uma pasta local `.ia/` (não versionada) contendo arquivos Markdown organizados por task — cada um com objetivo, escopo, abordagem e critério de aceite — além de um arquivo de contexto geral do projeto e um registro de comandos reutilizáveis. Essa estrutura serviu como base de planejamento e memória entre as sessões de trabalho.
+
+---
+
 ## Estrutura do repositório
 
 ```
