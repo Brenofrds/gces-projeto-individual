@@ -345,3 +345,72 @@ body, html {
     padding: 12px 0;
     margin: 0;
 }
+
+/* ===== Painel de modo ===== */
+
+#mode-info {
+    display: none;
+    margin: 0 0 12px;
+    padding: 10px 14px;
+    border-left: 3px solid #e6b800;
+    background-color: #0d0d0d;
+    font-size: 12px;
+}
+
+.mode-info-title {
+    font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #e6b800;
+    margin-bottom: 8px;
+}
+
+.key-legend {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 5px 10px;
+}
+
+.key-label {
+    color: #888;
+    white-space: nowrap;
+}
+
+.key-val {
+    color: #ddd;
+    line-height: 1.5;
+}
+
+.mode-note {
+    color: #bbb;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ===== Responsividade ===== */
+
+@media (max-width: 600px) {
+    #lobby {
+        padding: 20px 8px;
+        align-items: stretch;
+    }
+
+    #lobby-card {
+        max-width: 100%;
+        padding: 20px 14px;
+    }
+
+    .key-legend {
+        grid-template-columns: 1fr;
+    }
+
+    .history-row {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .history-date {
+        font-size: 11px;
+    }
+}

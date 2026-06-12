@@ -32,6 +32,8 @@
                 </label>
             </div>
 
+            <div id="mode-info"></div>
+
             <div id="network-section">
                 <div id="host-options">
                     <label class="host-option">
@@ -134,6 +136,64 @@
 
             (function () {
 
+                var modeInfoContent = {
+                    network: {
+                        title: 'Multiplayer Online',
+                        body: '<p class="mode-note">Conecte com outro jogador pela internet.<br>' +
+                              'Hospedar: crie a sala e aguarde o adversario.<br>' +
+                              'Entrar: informe o nome de uma sala existente.</p>'
+                    },
+                    multiplayer: {
+                        title: 'Controles &#8212; 2 Jogadores Locais',
+                        body: '<div class="key-legend">' +
+                              '<span class="key-label">Jogador 1 (Sub-Zero):</span>' +
+                              '<span class="key-val">' +
+                              'G / J = caminhar &nbsp; Y / H = pular / agachar &nbsp; A S D F = ataques &nbsp; Shift = bloquear' +
+                              '</span>' +
+                              '<span class="key-label">Jogador 2 (Kano):</span>' +
+                              '<span class="key-val">' +
+                              '&larr; / &rarr; = caminhar &nbsp; &uarr; / &darr; = pular / agachar &nbsp; P [ ] \\ = ataques &nbsp; Ctrl = bloquear' +
+                              '</span>' +
+                              '</div>'
+                    },
+                    cpu: {
+                        title: 'Controles &#8212; Contra CPU',
+                        body: '<div class="key-legend">' +
+                              '<span class="key-label">Voce (Sub-Zero):</span>' +
+                              '<span class="key-val">' +
+                              '&larr; / &rarr; = caminhar &nbsp; &uarr; / &darr; = pular / agachar &nbsp; A S D F = ataques &nbsp; Shift = bloquear' +
+                              '</span>' +
+                              '<span class="key-label">CPU (Kano):</span>' +
+                              '<span class="key-val">Controlado pela IA automaticamente. Decisao a cada 650 ms.</span>' +
+                              '</div>'
+                    },
+                    webcaminput: {
+                        title: 'Controles &#8212; Teclado vs Webcam',
+                        body: '<div class="key-legend">' +
+                              '<span class="key-label">P2 Kano (teclado):</span>' +
+                              '<span class="key-val">' +
+                              '&larr; / &rarr; = caminhar &nbsp; &uarr; / &darr; = pular / agachar &nbsp; A S D F = ataques &nbsp; Shift = bloquear' +
+                              '</span>' +
+                              '<span class="key-label">P1 Sub-Zero (webcam):</span>' +
+                              '<span class="key-val">' +
+                              'Permita o acesso a camera. Use fundo claro e roupas escuras.' +
+                              '</span>' +
+                              '</div>'
+                    }
+                };
+
+                function updateModeInfo(mode) {
+                    var info = modeInfoContent[mode],
+                        el = $('mode-info');
+                    if (info) {
+                        el.innerHTML = '<div class="mode-info-title">' + info.title + '</div>' + info.body;
+                        el.style.display = 'block';
+                    } else {
+                        el.innerHTML = '';
+                        el.style.display = 'none';
+                    }
+                }
+
                 var baseOptions = {
                     arena: {
                         container: document.getElementById('arena'),
@@ -204,6 +264,9 @@
                     if (event.event_type === 'game_joined') {
                         return 'Jogador entrou em "' + gameName + '"';
                     }
+                    if (event.event_type === 'socket_connected') {
+                        return 'Jogador conectado ao lobby';
+                    }
                     return event.event_type;
                 }
 
@@ -250,6 +313,7 @@
                     $('network-section').style.display = isNetwork ? 'block' : 'none';
                     $('playButton').textContent = isNetwork ? 'Conectar' : 'Jogar';
                     $('lobbyMessage').textContent = '';
+                    updateModeInfo(getSelectedMode());
                 }
 
                 function startNewGame(gameOptions) {
