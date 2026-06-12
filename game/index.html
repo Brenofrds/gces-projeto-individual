@@ -8,14 +8,69 @@
     <link rel="stylesheet" href="styles/styles.css" />
 </head>
 <body>
-    <table>
+    <div id="lobby">
+        <div id="lobby-card">
+            <h1>mk.js</h1>
+            <p class="lobby-subtitle">Selecione o modo de jogo</p>
+
+            <div id="mode-options" role="radiogroup" aria-label="Modo de jogo">
+                <label class="mode-option">
+                    <input type="radio" name="gameType" value="network" checked>
+                    <span>Multiplayer Online</span>
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="gameType" value="multiplayer">
+                    <span>Local &#8212; 2 Jogadores</span>
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="gameType" value="cpu">
+                    <span>Local &#8212; Contra CPU</span>
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="gameType" value="webcaminput">
+                    <span>Local &#8212; Teclado vs Webcam</span>
+                </label>
+            </div>
+
+            <div id="network-section">
+                <div id="host-options">
+                    <label class="host-option">
+                        <input type="radio" name="hostChoice" value="yes" checked>
+                        Hospedar partida
+                    </label>
+                    <label class="host-option">
+                        <input type="radio" name="hostChoice" value="no">
+                        Entrar em partida
+                    </label>
+                </div>
+                <div class="field-row">
+                    <label for="gameName">Nome da partida</label>
+                    <input id="gameName" type="text" maxlength="80" placeholder="Ex: sala-1">
+                </div>
+            </div>
+
+            <button id="playButton" type="button">Conectar</button>
+            <p id="lobbyMessage" class="lobby-message" aria-live="polite"></p>
+
+            <div id="history-section">
+                <div class="history-header">
+                    <span>Partidas recentes</span>
+                    <button id="refreshHistory" type="button" class="refresh-btn"
+                            aria-label="Atualizar historico">&#x21bb;</button>
+                </div>
+                <div id="historyList">
+                    <p class="history-empty">Carregando...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table id="gameView">
     <thead>
-        <th>
-            Arena
-        </th>
-        <th>
-            Webcam
-        </th>
+        <tr>
+            <th>Arena</th>
+            <th>Webcam</th>
+        </tr>
     </thead>
     <tbody>
         <tr>
@@ -40,22 +95,20 @@
         <tr>
             <td colspan="2">
                 <h1>Instructions</h1>
-                <p>
-                    <ul class="instructions-list">
-                        <li>For playing with gesture recognition you need Google Chrome 22+ or Firefox 19+.</li>
-                        <li>Choose proper place to position your computer. I recommend you to use white wall as background and dark clothes for best contrast.</li>
-                        <li>Stay outside the scope of the webcam. It needs to capture the background behind you at first place.</li>
-                        <li>Allow to the web page to use your webcam.</li>
-                        <li>If the webcam canvas is black then you can start playing otherwise restart and try again.</li>
-                        <li>Stay in about 2.5 meters away from your computer in the middle of the view zone.</li>
-                        <li>For walking left stay in the left side of the webcam view region and right if you want to walk right. If you want to stop just go back in the middle.</li>
-                        <li>Raise your left or right arm to punch.</li>
-                        <li>Raise your left or right leg to kick.</li>
-                        <li>Squat and your fighter will squat too.</li>
-                        <li>Squat and punch for squat low punch attack.</li>
-                        <li>Enjoy!</li>
-                    </ul>
-                </p>
+                <ul class="instructions-list">
+                    <li>For playing with gesture recognition you need Google Chrome 22+ or Firefox 19+.</li>
+                    <li>Choose proper place to position your computer. I recommend you to use white wall as background and dark clothes for best contrast.</li>
+                    <li>Stay outside the scope of the webcam. It needs to capture the background behind you at first place.</li>
+                    <li>Allow to the web page to use your webcam.</li>
+                    <li>If the webcam canvas is black then you can start playing otherwise restart and try again.</li>
+                    <li>Stay in about 2.5 meters away from your computer in the middle of the view zone.</li>
+                    <li>For walking left stay in the left side of the webcam view region and right if you want to walk right. If you want to stop just go back in the middle.</li>
+                    <li>Raise your left or right arm to punch.</li>
+                    <li>Raise your left or right leg to kick.</li>
+                    <li>Squat and your fighter will squat too.</li>
+                    <li>Squat and punch for squat low punch attack.</li>
+                    <li>Enjoy!</li>
+                </ul>
             </td>
         </tr>
     </tbody>
@@ -80,14 +133,8 @@
             };
 
             (function () {
-                
-                var startGame = function () {
-                    $('loading').style.visibility = 'hidden';
-                    $('arena').style.visibility = 'visible';
-                    $('utils').style.visibility = 'visible';
-                };
-                
-                var options = {
+
+                var baseOptions = {
                     arena: {
                         container: document.getElementById('arena'),
                         arena: mk.arenas.types.THRONE_ROOM
@@ -101,21 +148,169 @@
                                 setLife($('player1Life'), o.getLife());
                             }
                         }
-
-                    },
-                    isHost: /^yes$/i.test(prompt('Are you going to be host?')),
-                    gameName: prompt('Enter game name:'),
-                    gameType: 'network'
+                    }
                 };
 
-                function startNewGame() {
+                function showGame() {
+                    $('lobby').style.display = 'none';
+                    $('gameView').style.display = 'table';
+                }
+
+                function startGame() {
+                    $('loading').style.visibility = 'hidden';
+                    $('arena').style.visibility = 'visible';
+                    $('utils').style.visibility = 'visible';
+                }
+
+                function showLobby(message) {
+                    $('gameView').style.display = 'none';
+                    $('lobby').style.display = 'flex';
+                    $('arena').style.visibility = 'hidden';
+                    $('utils').style.visibility = 'hidden';
+                    $('loading').style.visibility = 'visible';
+                    $('player1Life').style.width = '100%';
+                    $('player2Life').style.width = '100%';
+                    if (message) {
+                        $('lobbyMessage').textContent = message;
+                    }
+                    loadHistory();
+                }
+
+                function escapeHtml(value) {
+                    return String(value).replace(/[&<>"']/g, function (char) {
+                        return {
+                            '&': '&amp;',
+                            '<': '&lt;',
+                            '>': '&gt;',
+                            '"': '&quot;',
+                            "'": '&#39;'
+                        }[char];
+                    });
+                }
+
+                function formatDate(value) {
+                    if (!value) {
+                        return '';
+                    }
+                    return new Date(value).toLocaleString();
+                }
+
+                function formatEvent(event) {
+                    var payload = event.payload || {},
+                        gameName = payload.gameName || 'sem nome';
+                    if (event.event_type === 'game_created') {
+                        return 'Partida "' + gameName + '" criada';
+                    }
+                    if (event.event_type === 'game_joined') {
+                        return 'Jogador entrou em "' + gameName + '"';
+                    }
+                    return event.event_type;
+                }
+
+                function renderHistory(events) {
+                    var html = '',
+                        i;
+                    if (!events || !events.length) {
+                        $('historyList').innerHTML =
+                            '<p class="history-empty">Nenhuma partida registrada ainda.</p>';
+                        return;
+                    }
+                    for (i = 0; i < events.length; i += 1) {
+                        html += '<div class="history-row">' +
+                            '<span class="history-desc">' +
+                                escapeHtml(formatEvent(events[i])) +
+                            '</span>' +
+                            '<span class="history-date">' +
+                                escapeHtml(formatDate(events[i].created_at)) +
+                            '</span>' +
+                            '</div>';
+                    }
+                    $('historyList').innerHTML = html;
+                }
+
+                function loadHistory() {
+                    fetch('/api/game-history')
+                        .then(function (response) {
+                            return response.json();
+                        })
+                        .then(renderHistory)
+                        .catch(function () {
+                            $('historyList').innerHTML =
+                                '<p class="history-empty">Nao foi possivel carregar o historico.</p>';
+                        });
+                }
+
+                function getSelectedMode() {
+                    var checked = document.querySelector('input[name="gameType"]:checked');
+                    return checked ? checked.value : 'network';
+                }
+
+                function updateNetworkSection() {
+                    var isNetwork = getSelectedMode() === 'network';
+                    $('network-section').style.display = isNetwork ? 'block' : 'none';
+                    $('playButton').textContent = isNetwork ? 'Conectar' : 'Jogar';
+                    $('lobbyMessage').textContent = '';
+                }
+
+                function startNewGame(gameOptions) {
+                    var options = {
+                        arena: baseOptions.arena,
+                        fighters: baseOptions.fighters,
+                        callbacks: {
+                            attack: baseOptions.callbacks.attack,
+                            'game-end': function () {
+                                setTimeout(function () {
+                                    if (mk.game) {
+                                        mk.reset();
+                                    }
+                                    showLobby('Partida finalizada.');
+                                }, 1200);
+                            }
+                        },
+                        isHost: gameOptions.isHost,
+                        gameName: gameOptions.gameName,
+                        gameType: gameOptions.gameType,
+                        webcamContainer: $('webcam-parent')
+                    };
+
+                    showGame();
                     mk.start(options).ready(function () {
                         startGame();
                     });
                 }
-                
-                startNewGame();
-                
+
+                $('playButton').onclick = function () {
+                    var gameType = getSelectedMode(),
+                        gameName = $('gameName').value.trim(),
+                        hostEl = document.querySelector('input[name="hostChoice"]:checked'),
+                        isHost = hostEl ? hostEl.value === 'yes' : true;
+
+                    if (gameType === 'network' && !gameName) {
+                        $('lobbyMessage').textContent = 'Informe o nome da partida.';
+                        return;
+                    }
+
+                    $('lobbyMessage').textContent = '';
+                    startNewGame({
+                        gameType: gameType,
+                        gameName: gameName,
+                        isHost: isHost
+                    });
+                };
+
+                (function () {
+                    var radios = document.querySelectorAll('input[name="gameType"]'),
+                        i;
+                    for (i = 0; i < radios.length; i += 1) {
+                        radios[i].onchange = updateNetworkSection;
+                    }
+                }());
+
+                $('refreshHistory').onclick = loadHistory;
+
+                updateNetworkSection();
+                showLobby();
+
             }());
 
         }());
