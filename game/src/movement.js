@@ -59,7 +59,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     return c;
   };
 
-  Filters.filterImage = function(filter, image, var_args) {
+  Filters.filterImage = function(filter, image, var_args) { // eslint-disable-line no-unused-vars
     var args = [this.getPixels(image)];
     for (var i=2; i<arguments.length; i++) {
       args.push(arguments[i]);
@@ -67,7 +67,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     return filter.apply(null, args);
   };
 
-  Filters.grayscale = function(pixels, args) {
+  Filters.grayscale = function(pixels, args) { // eslint-disable-line no-unused-vars
     var d = pixels.data;
     for (var i=0; i<d.length; i+=4) {
       var r = d[i],

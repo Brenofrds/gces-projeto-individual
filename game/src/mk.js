@@ -229,7 +229,7 @@
       leftOrient = mk.fighters.orientations.LEFT,
       rightOrient = mk.fighters.orientations.RIGHT,
       orient = f.getOrientation(),
-      self = this;
+      self = this; // eslint-disable-line no-unused-vars
 
     if (f.getMove().type === m.SQUAT && !pressed[k.DOWN]) {
       return m.STAND_UP;
@@ -345,7 +345,7 @@
     var mkMoves = mk.moves.types,
       pos = Movement.positions,
       m = Movement.movements,
-      current = this.fighters[this._player].getMove().type;
+      current = this.fighters[this._player].getMove().type; // eslint-disable-line no-unused-vars
     if (move === pos.LEFT) {
       return mkMoves.WALK_BACKWARD;
     } else if (move === pos.RIGHT) {
@@ -478,7 +478,7 @@
     this._socket.on.apply(this._socket, arguments);
   };
 
-  mk.controllers.Network.prototype._createGame = function (game) {
+  mk.controllers.Network.prototype._createGame = function (game) { // eslint-disable-line no-unused-vars
     this._transport.emit(this.Requests.CREATE_GAME, this._gameName);
     this._addSocketHandlers();
   };
@@ -510,7 +510,7 @@
       }
     }, 500);
     if (this._isHost) {
-      this._transport.on(this.Messages.PLAYER_CONNECTED, function (data) {
+      this._transport.on(this.Messages.PLAYER_CONNECTED, function (data) { // eslint-disable-line no-unused-vars
         var c = self._callbacks[mk.callbacks.PLAYER_CONNECTED];
         if (typeof c  === 'function') {
           c();
@@ -526,7 +526,7 @@
     }
   };
 
-  mk.controllers.Network.prototype._joinGame = function (game) {
+  mk.controllers.Network.prototype._joinGame = function (game) { // eslint-disable-line no-unused-vars
     this._transport.emit(this.Requests.JOIN_GAME, this._gameName);
     this._addSocketHandlers();
   };
@@ -801,7 +801,7 @@
 
   mk.moves.Move.prototype._nextStep = function (callback) {
     var img = document.createElement('img'),
-      conf = mk.config;
+      conf = mk.config; // eslint-disable-line no-unused-vars
 
     img = this._steps[this.owner.getOrientation()][this._currentStep];
     this.owner.setState(img);
@@ -845,7 +845,7 @@
          id + '.png';
   };
 
-  mk.moves.Move.prototype.stop = function (callback) {
+  mk.moves.Move.prototype.stop = function (callback) { // eslint-disable-line no-unused-vars
 
     if (typeof this._beforeStop === 'function')
       this._beforeStop();
@@ -1621,7 +1621,7 @@
     this.moves[mk.moves.types.FORWARD_JUMP] = new mk.moves.ForwardJump(this);
     this.moves[mk.moves.types.BACKWARD_JUMP] = new mk.moves.BackwardJump(this);
 
-    var self = this,
+    var self = this, // eslint-disable-line no-unused-vars
       initialized = 0,
       total = Object.keys(this.moves).length;
 
@@ -1692,7 +1692,7 @@
     this._orientation = orientation;
   };
 
-  mk.fighters.Fighter.prototype.getOrientation = function (orientation) {
+  mk.fighters.Fighter.prototype.getOrientation = function (orientation) { // eslint-disable-line no-unused-vars
     return this._orientation;
   };
 

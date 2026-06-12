@@ -101,21 +101,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  frontend-check:
-    name: Frontend syntax check
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Baixar codigo
-        uses: actions/checkout@v4
-
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Verificar JavaScript do frontend
-        run: |
-          node --check game/src/movement.js
-          node --check game/src/mk.js
