@@ -1,81 +1,97 @@
-var Pool = require('pg').Pool,
-    pool = null;
+var Pool = require('pg').Pool;
 
-function getPool() {
-  if (!process.env.DATABASE_URL) {
-    return null;
-  }
+var pool = new Pool(process.env.DATABASE_URL ? {
+  connectionString: process.env.DATABASE_URL
+} : {
+  host: process.env.POSTGRES_HOST || 'localhost',
+  port: Number(process.env.POSTGRES_PORT || 5432),
+  database: process.env.POSTGRES_DB || 'mkjs',
+  user: process.env.POSTGRES_USER || 'mkjs',
+  password: process.env.POSTGRES_PASSWORD || 'mkjs'
+});
 
-  if (!pool) {
-    pool = new Pool({
-      connectionString: process.env.DATABASE_URL
-    });
-  }
+var initialized = false;
+var initializing = false;
 
-  return pool;
+function wait(ms) {
+  return new Promise(function (resolve) {
+    globalThis.setTimeout(resolve, ms);
+  });
 }
 
-function initialize() {
-  var activePool = getPool();
-
-  if (!activePool) {
-    return Promise.resolve();
-  }
-
-  return activePool.query([
-    'CREATE TABLE IF NOT EXISTS game_history (',
-    'id SERIAL PRIMARY KEY,',
-    'game_name VARCHAR(120) NOT NULL,',
-    'created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()',
+function createEventsTable() {
+  return pool.query(
+    'CREATE TABLE IF NOT EXISTS game_events (' +
+      'id SERIAL PRIMARY KEY, ' +
+      'event_type VARCHAR(64) NOT NULL, ' +
+      'payload JSONB NOT NULL DEFAULT \'{}\'::jsonb, ' +
+      'created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()' +
     ')'
-  ].join(' '));
+  );
 }
 
-function validateGameName(gameName) {
-  if (typeof gameName !== 'string' || !gameName.trim()) {
-    var error = new Error('gameName deve ser uma string nao vazia');
-    error.statusCode = 400;
-    throw error;
+async function initDatabase() {
+  var attempt;
+
+  if (initialized || initializing) {
+    return;
   }
 
-  return gameName.trim().slice(0, 120);
+  initializing = true;
+
+  for (attempt = 1; attempt <= 10; attempt += 1) {
+    try {
+      await createEventsTable();
+      initialized = true;
+      console.log('Postgres: tabela game_events pronta.');
+      return;
+    } catch (error) {
+      console.warn('Postgres tentativa ' + attempt + ' falhou: ' + error.message);
+      if (attempt < 10) {
+        await wait(2000);
+      }
+    }
+  }
+
+  console.warn('Postgres indisponivel. Persistencia desativada para esta sessao.');
 }
 
-function saveGameHistory(gameName) {
-  var activePool = getPool(),
-      normalizedGameName = validateGameName(gameName);
-
-  if (!activePool) {
-    return Promise.resolve({
-      game_name: normalizedGameName,
-      persisted: false
-    });
+async function logEvent(eventType, payload) {
+  if (!initialized) {
+    return false;
   }
 
-  return activePool.query(
-    'INSERT INTO game_history (game_name) VALUES ($1) RETURNING id, game_name, created_at',
-    [normalizedGameName]
-  ).then(function (result) {
-    return result.rows[0];
-  });
+  try {
+    await pool.query(
+      'INSERT INTO game_events (event_type, payload) VALUES ($1, $2::jsonb)',
+      [eventType, JSON.stringify(payload || {})]
+    );
+    return true;
+  } catch (error) {
+    console.warn('Nao foi possivel persistir evento ' + eventType + ': ' + error.message);
+    return false;
+  }
 }
 
-function listGameHistory() {
-  var activePool = getPool();
+async function listRecentEvents(limit) {
+  var result;
 
-  if (!activePool) {
-    return Promise.resolve([]);
+  if (!initialized) {
+    return [];
   }
 
-  return activePool.query(
-    'SELECT id, game_name, created_at FROM game_history ORDER BY created_at DESC LIMIT 20'
-  ).then(function (result) {
-    return result.rows;
-  });
+  result = await pool.query(
+    'SELECT id, event_type, payload, created_at FROM game_events ' +
+      'WHERE event_type IN (\'game_created\', \'game_joined\') ' +
+      'ORDER BY created_at DESC, id DESC LIMIT $1',
+    [limit || 20]
+  );
+
+  return result.rows;
 }
 
 module.exports = {
-  initialize: initialize,
-  saveGameHistory: saveGameHistory,
-  listGameHistory: listGameHistory
+  initDatabase: initDatabase,
+  logEvent: logEvent,
+  listRecentEvents: listRecentEvents
 };

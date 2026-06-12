@@ -25,37 +25,27 @@ var Responses = {
     JOIN_GAME: 'join-game'
   };
 
-database.initialize().catch(function (error) {
-  console.error('Falha ao inicializar banco de dados:', error.message);
-});
+database.initDatabase();
 
 app.get('/health', function (req, res) {
   res.json({ status: 'ok' });
 });
 
 app.get('/api/game-history', function (req, res, next) {
-  database.listGameHistory()
-    .then(function (history) {
-      res.json(history);
-    })
-    .catch(next);
-});
-
-app.post('/api/game-history', function (req, res, next) {
-  database.saveGameHistory(req.body && req.body.gameName)
-    .then(function (game) {
-      res.status(201).json(game);
+  database.listRecentEvents(20)
+    .then(function (events) {
+      res.json(events);
     })
     .catch(next);
 });
 
 io.on('connection', function (socket) {
+  database.logEvent('socket_connected', { socketId: socket.id });
+
   socket.on(Requests.CREATE_GAME, function (gameName) {
     if (games.createGame(gameName)) {
-      database.saveGameHistory(gameName).catch(function (error) {
-        console.error('Falha ao salvar historico de jogo:', error.message);
-      });
       games.getGame(gameName).addPlayer(socket);
+      database.logEvent('game_created', { gameName: gameName, socketId: socket.id });
       socket.emit('response', Responses.SUCCESS);
     } else {
       socket.emit('response', Responses.GAME_EXISTS);
@@ -67,6 +57,7 @@ io.on('connection', function (socket) {
       socket.emit('response', Responses.GAME_NOT_EXISTS);
     } else {
       if (game.addPlayer(socket)) {
+        database.logEvent('game_joined', { gameName: gameName, socketId: socket.id });
         socket.emit('response', Responses.SUCCESS);
       } else {
         socket.emit('response', Responses.GAME_FULL);
