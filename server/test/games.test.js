@@ -2,7 +2,7 @@
 
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const { GameCollection } = require('./games.js');
+const { GameCollection } = require('../games.js');
 
 function mockSocket() {
   return {

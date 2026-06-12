@@ -3,7 +3,7 @@
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const fc = require('fast-check');
-const { GameCollection } = require('./games.js');
+const { GameCollection } = require('../games.js');
 
 function mockSocket() {
   return {

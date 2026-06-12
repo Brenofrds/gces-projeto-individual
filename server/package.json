@@ -12,9 +12,9 @@
     "start": "node server.js",
     "dev": "nodemon --legacy-watch --watch . server.js",
     "lint": "eslint server.js games.js database.js",
-    "test": "node --test",
-    "test:fuzz": "node --test games.fuzz.test.js",
-    "test:coverage": "c8 --reporter=lcov --reporter=text node --test",
+    "test": "node --test test/games.test.js",
+    "test:fuzz": "node --test fuzz/games.fuzz.test.js",
+    "test:coverage": "c8 --reporter=lcov --reporter=text node --test test/*.test.js fuzz/*.test.js",
     "build": "node --check server.js && node --check games.js && node --check database.js"
   },
   "dependencies": {
