@@ -4,6 +4,8 @@ Jogo de luta multiplayer em tempo real, modernizado como projeto individual da d
 
 **Stack:** Node.js · Express · Socket.IO · PostgreSQL · Docker · Nginx · Kubernetes
 
+![Lobby do jogo](docs/lobby.png)
+
 ---
 
 ## Pré-requisitos
