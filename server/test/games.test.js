@@ -5,10 +5,13 @@ const assert = require('node:assert/strict');
 const { GameCollection } = require('../games.js');
 
 function mockSocket() {
+  const handlers = {};
   return {
     received: [],
+    disconnected: false,
     emit(event, data) { this.received.push({ event, data }); },
-    on() {},
+    on(event, cb) { handlers[event] = cb; },
+    trigger(event, data) { if (handlers[event]) handlers[event](data); },
     disconnect() { this.disconnected = true; }
   };
 }
@@ -85,5 +88,50 @@ describe('Game.addPlayer', () => {
 
     assert.ok(p0Notified, 'player 0 deveria receber player-connected');
     assert.ok(p1Notified, 'player 1 deveria receber player-connected'); // BUG: nao recebe
+  });
+});
+
+describe('Game.getId', () => {
+  it('retorna o id da partida', () => {
+    const gc = new GameCollection();
+    gc.createGame('sala-id');
+    const game = gc.getGame('sala-id');
+    assert.equal(game.getId(), 'sala-id');
+  });
+});
+
+describe('Game - encaminhamento de eventos', () => {
+  it('encaminha evento do jogador 0 para o jogador 1', () => {
+    const gc = new GameCollection();
+    gc.createGame('sala-ev');
+    const game = gc.getGame('sala-ev');
+    const p0 = mockSocket();
+    const p1 = mockSocket();
+    game.addPlayer(p0);
+    game.addPlayer(p1);
+
+    p0.trigger('event', 'high-kick');
+
+    assert.ok(
+      p1.received.some(e => e.event === 'event' && e.data === 'high-kick'),
+      'jogador 1 deveria receber o evento do jogador 0'
+    );
+  });
+});
+
+describe('Game.endGame', () => {
+  it('desconecta o oponente e remove a partida quando um jogador sai', () => {
+    const gc = new GameCollection();
+    gc.createGame('sala-end');
+    const game = gc.getGame('sala-end');
+    const p0 = mockSocket();
+    const p1 = mockSocket();
+    game.addPlayer(p0);
+    game.addPlayer(p1);
+
+    p0.trigger('disconnect');
+
+    assert.equal(p1.disconnected, true, 'oponente deveria ser desconectado');
+    assert.equal(gc.getGame('sala-end'), undefined, 'partida deveria ser removida');
   });
 });

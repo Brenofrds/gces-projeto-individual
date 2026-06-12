@@ -14,7 +14,7 @@
     "lint": "eslint server.js games.js database.js",
     "test": "node --test test/games.test.js",
     "test:fuzz": "node --test fuzz/games.fuzz.test.js",
-    "test:coverage": "c8 --reporter=lcov --reporter=text node --test test/*.test.js fuzz/*.test.js",
+    "test:coverage": "c8 --reporter=lcov --reporter=text --check-coverage --lines 80 --functions 80 --branches 80 --statements 80 node --test test/*.test.js fuzz/*.test.js",
     "build": "node --check server.js && node --check games.js && node --check database.js"
   },
   "dependencies": {
