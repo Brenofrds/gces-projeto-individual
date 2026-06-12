@@ -47,6 +47,32 @@ describe('GameCollection', () => {
   });
 });
 
+describe('GameCollection - validacao de id', () => {
+  it('rejeita string vazia', () => {
+    const gc = new GameCollection();
+    assert.equal(gc.createGame(''), false);
+    assert.equal(gc.getGame(''), undefined);
+  });
+
+  it('rejeita string somente com espacos', () => {
+    const gc = new GameCollection();
+    assert.equal(gc.createGame('   '), false);
+    assert.equal(gc.getGame('   '), undefined);
+  });
+
+  it('rejeita null', () => {
+    const gc = new GameCollection();
+    assert.equal(gc.createGame(null), false);
+    assert.equal(gc.getGame(null), undefined);
+  });
+
+  it('rejeita id nao-string (numero)', () => {
+    const gc = new GameCollection();
+    assert.equal(gc.createGame(42), false);
+    assert.equal(gc.getGame(42), undefined);
+  });
+});
+
 describe('Game.addPlayer', () => {
   it('aceita primeiro jogador', () => {
     const gc = new GameCollection();

@@ -42,7 +42,8 @@ describe('GameCollection - fuzzing', () => {
   it('addPlayer rejeita terceiro jogador sem lancar excecao', () => {
     fc.assert(fc.property(fc.string(), (id) => {
       const gc = new GameCollection();
-      gc.createGame(id);
+      const created = gc.createGame(id);
+      if (!created) return;
       const game = gc.getGame(id);
       game.addPlayer(mockSocket());
       game.addPlayer(mockSocket());
